@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Game</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="jquery-3.4.1.min.js"></script>
+</head>
+<body>
+    <div>
+        <span class="message">До окончания осталось: </span><span class="timing"></span>
+    </div>
+    <div class="container">
+
+    </div>
+    <script>
+        let str = '<table>';
+        let k = 0;
+        let t = 100;
+        for(let i = 0; i < 5; i ++) {
+            str += '<tr>';
+            for(let j = 0; j < 5; j ++) {
+                let fsize = Math.floor(Math.random() * 20) + 12;
+                let r = Math.floor(Math.random() * 256);
+                r = decToHex(r);
+                let g = Math.floor(Math.random() * 256);
+                g = decToHex(g);
+                let b = Math.floor(Math.random() * 256);
+                b = decToHex(b);
+                str += `<td id="cell${k}" onclick="clickCell()" style="font-size:${fsize}px;color:#${r}${g}${b}"></td>`;
+                k ++;
+            }
+            str += '</tr>'
+        }
+        str += '</table>';
+        $('.container').html(str);
+        k = 1;
+        do {
+            let rnd = Math.floor(Math.random() * 25);
+            if($(`#cell${rnd}`).text() == '') {
+                $(`#cell${rnd}`).text(k);
+                k ++;
+            }
+        }while (k < 26);
+        k = 1;
+        let timer = null;
+        function clickCell() {
+            console.log(event.target)
+            
+            if(+(event.currentTarget.innerText) == k && t > 0) {
+                event.currentTarget.style.backgroundColor = "red";
+                k ++;
+            } 
+        }
+        for(let i = 0; i < 25; i ++) {
+            if($(`#cell${i}`).text() == '1') {
+                $(`#cell${i}`).unbind();
+                $(`#cell${i}`).on("click", ()=> {
+                    $(`#cell${i}`).css("backgroundColor", "red");
+                    timer = setInterval(()=>{
+                        if(t >= 0) {
+                            $('.timing').text(`${t}`);
+                            t --;
+                        }
+                        else {
+                            clearInterval(timer);
+                            if(k < 25) {
+                                $('.message').text("Время вышло, Вы проиграли!");
+                                $('.timing').text('');
+                                $('td').unbind();
+                            }
+                        }
+                    },1000);
+                });
+            };
+            if($(`#cell${i}`).text() == '25') {
+                $(`#cell${i}`).unbind();
+                $(`#cell${i}`).on("click", ()=> {
+                    $(`#cell${i}`).css("backgroundColor", "red");
+                    if(t > 0) {
+                        clearInterval(timer);
+                        $('.message').text("Вы выиграли!");
+                        $('.timing').text('');
+                    }
+                });
+            };
+        }
+      
+        function decToHex(n) { 
+            return Number(n).toString(16); 
+        }
+    </script>
+</body>
+</html>
